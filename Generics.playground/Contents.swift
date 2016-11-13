@@ -5,8 +5,9 @@ protocol Configurable {
     func configure(with data:U)
 }
 
-class ArrayVC<Cell: UITableViewCell> : UITableViewController where Cell:Configurable {
-    var data:[Configurable.associatedtype] = []
+class ArrayVC<Cell: UITableViewCell> : UITableViewController where Cell: Configurable {
+
+    var data:[Cell.U] = []
 
     let cellID = "cell"
 
@@ -27,30 +28,43 @@ class ArrayVC<Cell: UITableViewCell> : UITableViewController where Cell:Configur
 
 }
 
-extension UITableViewCell: Configurable {
-    typealias U = String
-
-    func configure(with data: UITableViewCell.U) {
+class StringTableViewCell : UITableViewCell {}
+extension StringTableViewCell: Configurable {
+    func configure(with data: String) {
         textLabel?.text = data
     }
 }
 
+class StringVC : ArrayVC<StringTableViewCell> {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        data = ["John","Ben","Alice", "Jay"]
+        title = "Array View Controller"
+    }
+}
 
-class MyVC : ArrayVC<UITableViewCell> {
+class NumberTableViewCell: UITableViewCell { }
+extension NumberTableViewCell: Configurable {
+    func configure(with data: Int) {
+        textLabel?.text = String(data)
+    }
+}
+
+class NumberVC : ArrayVC<NumberTableViewCell> {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        data = ["John", "Ben", "Alice"]
-        title = "Array View Controller"
+        data = [1,2,3]
+        title = "Numbers View Controller"
     }
-
 }
 
 import PlaygroundSupport
 
-let vc = MyVC()
+let stringVC = StringVC()
+let nav = UINavigationController(rootViewController: stringVC)
 
-let nav = UINavigationController(rootViewController: vc)
+let numberVC = NumberVC()
 
 PlaygroundPage.current.liveView = nav
 
